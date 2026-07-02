@@ -2,9 +2,9 @@ spring:
   application:
     name: netflix
   datasource:
-    url: ${DATABASE_URL}
-    password: ${DATABASE_PASSWORD}
-    username: ${DATABASE_USERNAME}
+    url: jdbc:postgresql://localhost:5432/moviesdb
+    password: password
+    username: user
   jpa:
     hibernate:
       ddl-auto: update

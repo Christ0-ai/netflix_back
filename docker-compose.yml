@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:16
-    container_name: formation-postgresql
+    container_name: netflix-postgresql
     environment:
       POSTGRES_DB: moviesdb
       POSTGRES_USER: user
