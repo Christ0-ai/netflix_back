@@ -1,0 +1,79 @@
+name: github-actions-workflow.yml
+run-name: ${{ github.actor }} launch GitHub Actions 🚀
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+jobs:
+  init:
+    name: Project Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: maven
+
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Clean with Maven
+        run: ./mvnw clean
+
+      - name: Validate Maven project
+        run: ./mvnw validate
+
+      - name: Check code formatting
+        run: ./mvnw spotless:check
+
+  unit-test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    needs: init
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: maven
+
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Run unit tests
+        run: ./mvnw clean test
+
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    needs: unit-test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+          cache: maven
+
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
+      - name: Build Application  with Maven
+        run: ./mvnw -B clean package -DskipTests
