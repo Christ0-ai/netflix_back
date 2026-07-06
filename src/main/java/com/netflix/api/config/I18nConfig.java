@@ -8,8 +8,8 @@ import org.springframework.context.support.MessageSourceAccessor;
 @Configuration
 public class I18nConfig {
 
-    @Bean
-    MessageSourceAccessor messages(MessageSource messageSource) {
-        return new MessageSourceAccessor(messageSource);
-    }
+  @Bean
+  MessageSourceAccessor messages(MessageSource messageSource) {
+    return new MessageSourceAccessor(messageSource);
+  }
 }
