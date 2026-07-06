@@ -145,5 +145,57 @@ class MovieServiceImplTest {
       Mockito.verify(movieRepository).findById(1);
       Mockito.verifyNoInteractions(movieMapper);
     }
+
+    @Test
+    @DisplayName("findByTitle() should find a movie and return MovieResponseDto with success")
+    void findMByTitleValidTest() {
+      String title = "Movie1";
+      int id = 1;
+      Movie movie =
+          new Movie(id, title, "description", LocalDate.of(2026, Month.JULY, 2), 180, "url1.com");
+      MovieResponseDto expected =
+          new MovieResponseDto(
+              id, title, "description", LocalDate.of(2026, Month.JULY, 2), 180, "url1.com");
+
+      Mockito.when(movieRepository.findByTitle(title)).thenReturn(Optional.of(movie));
+      Mockito.when(movieMapper.toMovieResponseDto(movie)).thenReturn(expected);
+
+      MovieResponseDto response = movieService.findByTitle(title);
+
+      Assertions.assertAll(
+          () -> Assertions.assertNotNull(response, "Response should not be null"),
+          () -> Assertions.assertEquals(id, response.id(), "Id should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  "Movie1", response.title(), "Title should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  "description",
+                  response.description(),
+                  "Description should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  LocalDate.of(2026, Month.JULY, 2),
+                  response.releaseDate(),
+                  "ReleaseDate should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  180, response.duration(), "Duration should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  "url1.com", response.url(), "Url should be the same as expected"));
+
+      Mockito.verify(movieRepository).findByTitle(title);
+      Mockito.verify(movieMapper).toMovieResponseDto(movie);
+    }
+
+    @Test
+    @DisplayName("findByTitle(), should thrown EntityNotFoundException when title not found")
+    void findByTitleFailureIdNotFound() {
+      String title = "Movie1";
+      Assertions.assertThrows(EntityNotFoundException.class, () -> movieService.findByTitle(title));
+      Mockito.verify(movieRepository).findByTitle(title);
+      Mockito.verifyNoInteractions(movieMapper);
+    }
   }
 }

@@ -18,7 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MovieServiceImpl implements MovieService {
 
-  private static final String MOVIE_NOT_FOUND = "movie.id.not_found";
+  private static final String MOVIE_ID_NOT_FOUND = "movie.id.not_found";
+  private static final String MOVIE_TITLE_NOT_FOUND = "movie.title.not_found";
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
@@ -35,7 +36,19 @@ public class MovieServiceImpl implements MovieService {
   @Transactional(readOnly = true)
   public MovieResponseDto findById(int id) {
     Optional<Movie> optMovie = movieRepository.findById(id);
-    if (optMovie.isEmpty()) throw new EntityNotFoundException(messages.getMessage(MOVIE_NOT_FOUND));
+    if (optMovie.isEmpty())
+      throw new EntityNotFoundException(messages.getMessage(MOVIE_ID_NOT_FOUND));
+
+    return movieMapper.toMovieResponseDto(optMovie.get());
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public MovieResponseDto findByTitle(String title) {
+
+    Optional<Movie> optMovie = movieRepository.findByTitle(title);
+    if (optMovie.isEmpty())
+      throw new EntityNotFoundException(messages.getMessage(MOVIE_TITLE_NOT_FOUND));
 
     return movieMapper.toMovieResponseDto(optMovie.get());
   }

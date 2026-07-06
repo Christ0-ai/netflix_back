@@ -7,4 +7,6 @@ public interface MovieService {
   List<MovieResponseDto> findAll();
 
   MovieResponseDto findById(int id);
+
+  MovieResponseDto findByTitle(String title);
 }

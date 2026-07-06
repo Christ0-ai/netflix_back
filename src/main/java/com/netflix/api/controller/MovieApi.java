@@ -32,4 +32,14 @@ public interface MovieApi {
   @GetMapping("/{id}")
   ResponseEntity<MovieResponseDto> getMovieById(
       @PathVariable @Parameter(description = "Movie id", required = true) int id);
+
+  @Operation(summary = "Get one movie by its name")
+  @ApiResponse(responseCode = "200", description = "Movie found")
+  @ApiResponse(
+      responseCode = "404",
+      description = "Movie not found",
+      content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+  @GetMapping("/title/{title}")
+  ResponseEntity<MovieResponseDto> findByTitle(
+      @PathVariable @Parameter(description = "Film name not found", required = true) String title);
 }
