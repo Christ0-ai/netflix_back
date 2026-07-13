@@ -29,8 +29,8 @@ public class MovieController implements MovieApi {
   }
 
   @Override
-  public ResponseEntity<MovieResponseDto> findByTitle(String title) {
-    log.info("Access to endpoint GET/movies/{title}");
+  public ResponseEntity<MovieResponseDto> getByTitle(String title) {
+    log.info("Access to endpoint GET/movies/title/{title}");
     return ResponseEntity.ok(movieService.findByTitle(title));
   }
 }

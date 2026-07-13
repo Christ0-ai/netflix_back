@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Tag(name = "Movies", description = "Movie Catalog API")
+@Tag(name = "Movies", description = "Movie API")
 @RequestMapping("/movies")
 public interface MovieApi {
 
@@ -40,6 +40,6 @@ public interface MovieApi {
       description = "Movie not found",
       content = @Content(schema = @Schema(implementation = ErrorDto.class)))
   @GetMapping("/title/{title}")
-  ResponseEntity<MovieResponseDto> findByTitle(
+  ResponseEntity<MovieResponseDto> getByTitle(
       @PathVariable @Parameter(description = "Film name not found", required = true) String title);
 }
