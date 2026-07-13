@@ -46,7 +46,7 @@ public class SwaggerConfig {
         .addSecurityItem(new SecurityRequirement().addList(SCHEME_NAME))
         .info(
             new Info()
-                .title("Movies Review API")
+                .title("Movies Catalog API")
                 .version("1.0.0")
                 .description("API REST for movies review platform")
                 .contact(

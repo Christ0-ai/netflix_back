@@ -1,10 +1,10 @@
 package com.netflix.api.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.netflix.api.model.enums.EGenre;
+import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +22,12 @@ public class Movie {
   private String title;
   private String description;
   private LocalDate releaseDate;
-  private int duration;
-  private String url;
+
+  @Enumerated(EnumType.STRING)
+  private EGenre genre;
+
+  private String posterPath;
+
+  @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Review> reviews = new ArrayList<>();
 }
