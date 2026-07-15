@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "movies")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,11 +22,14 @@ public class Movie {
 
   private String title;
   private String description;
+
+  @Column(name = "release_date")
   private LocalDate releaseDate;
 
   @Enumerated(EnumType.STRING)
   private EGenre genre;
 
+  @Column(name = "poster_path")
   private String posterPath;
 
   @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
