@@ -1,7 +1,9 @@
 package com.netflix.api.service.impl;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
+import com.netflix.api.exception.MovieDuplicateException;
 import com.netflix.api.mapper.MovieMapper;
 import com.netflix.api.model.Movie;
 import com.netflix.api.model.Review;
@@ -10,6 +12,7 @@ import com.netflix.api.model.enums.EGenre;
 import com.netflix.api.model.enums.ERole;
 import com.netflix.api.repository.MovieRepository;
 import com.netflix.api.service.MovieService;
+import com.netflix.api.service.dto.MovieRequestDto;
 import com.netflix.api.service.dto.MovieResponseDto;
 import com.netflix.api.service.dto.ReviewResponseDto;
 import com.netflix.api.service.dto.UserResponseDto;
@@ -22,7 +25,6 @@ import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.support.MessageSourceAccessor;
 
@@ -106,9 +108,9 @@ class MovieServiceImplTest {
               "https://poster.jpg",
               new ArrayList<>());
 
-      Mockito.when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2));
-      Mockito.when(movieMapper.toMovieResponseDto(movie1)).thenReturn(expected1);
-      Mockito.when(movieMapper.toMovieResponseDto(movie2)).thenReturn(expected2);
+      when(movieRepository.findAll()).thenReturn(List.of(movie1, movie2));
+      when(movieMapper.toMovieResponseDto(movie1)).thenReturn(expected1);
+      when(movieMapper.toMovieResponseDto(movie2)).thenReturn(expected2);
 
       List<MovieResponseDto> response = movieService.findAll();
 
@@ -126,23 +128,23 @@ class MovieServiceImplTest {
           () -> Assertions.assertEquals(1, response.getFirst().reviews().size()),
           () -> Assertions.assertTrue(response.getLast().reviews().isEmpty()));
 
-      Mockito.verify(movieRepository).findAll();
-      Mockito.verify(movieMapper, Mockito.times(2)).toMovieResponseDto(Mockito.any());
+      verify(movieRepository).findAll();
+      verify(movieMapper, times(2)).toMovieResponseDto(any(Movie.class));
     }
 
     @Test
     @DisplayName("findAll(), should return an empty list when no movie exists")
     void findAllMoviesEmptyList() {
 
-      Mockito.when(movieRepository.findAll()).thenReturn(List.of());
+      when(movieRepository.findAll()).thenReturn(List.of());
       List<MovieResponseDto> response = movieService.findAll();
 
       Assertions.assertAll(
           () -> Assertions.assertNotNull(response, "Response list should not be null"),
           () -> Assertions.assertTrue(response.isEmpty(), "Response list should be empty"));
 
-      Mockito.verify(movieRepository).findAll();
-      Mockito.verifyNoInteractions(movieMapper);
+      verify(movieRepository).findAll();
+      verifyNoInteractions(movieMapper);
     }
 
     @Test
@@ -184,8 +186,8 @@ class MovieServiceImplTest {
               "https://poster.jpg",
               List.of(reviewResponseDto));
 
-      Mockito.when(movieRepository.findById(id)).thenReturn(Optional.of(movie));
-      Mockito.when(movieMapper.toMovieResponseDto(movie)).thenReturn(expected);
+      when(movieRepository.findById(id)).thenReturn(Optional.of(movie));
+      when(movieMapper.toMovieResponseDto(movie)).thenReturn(expected);
 
       MovieResponseDto response = movieService.findById(id);
 
@@ -218,31 +220,31 @@ class MovieServiceImplTest {
               Assertions.assertEquals(
                   1, response.reviews().size(), "Reviews should be the same as expected"));
 
-      Mockito.verify(movieRepository).findById(id);
-      Mockito.verify(movieMapper).toMovieResponseDto(movie);
+      verify(movieRepository).findById(id);
+      verify(movieMapper).toMovieResponseDto(movie);
     }
 
     @Test
     @DisplayName("findById(), should thrown EntityNotFoundException when id not found")
     void findByIdFailureIdNotFound() {
       Assertions.assertThrows(EntityNotFoundException.class, () -> movieService.findById(1));
-      Mockito.verify(movieRepository).findById(1);
-      Mockito.verifyNoInteractions(movieMapper);
+      verify(movieRepository).findById(1);
+      verifyNoInteractions(movieMapper);
     }
 
     @Test
     @DisplayName("findByTitle() should find a movie and return MovieResponseDto with success")
     void findMByTitleValidTest() {
-      LocalDate creationDate = LocalDate.of(2026, Month.JULY, 13);
-
+      LocalDate releaseDate = LocalDate.of(2026, Month.JULY, 13);
       String title = "Movie1";
       int id = 11;
+
       Movie movie =
           new Movie(
               id,
               title,
               "description",
-              LocalDate.of(2026, Month.JULY, 2),
+              releaseDate,
               EGenre.ACTION,
               "https://poster.jpg",
               new ArrayList<>());
@@ -252,13 +254,13 @@ class MovieServiceImplTest {
               id,
               title,
               "description",
-              LocalDate.of(2026, Month.JULY, 2),
+              releaseDate,
               EGenre.ACTION,
               "https://poster.jpg",
               new ArrayList<>());
 
-      Mockito.when(movieRepository.findByTitle(title)).thenReturn(Optional.of(movie));
-      Mockito.when(movieMapper.toMovieResponseDto(movie)).thenReturn(expected);
+      when(movieRepository.findByTitle(title)).thenReturn(Optional.of(movie));
+      when(movieMapper.toMovieResponseDto(movie)).thenReturn(expected);
 
       MovieResponseDto response = movieService.findByTitle(title);
 
@@ -275,12 +277,12 @@ class MovieServiceImplTest {
                   "Description should be the same as expected"),
           () ->
               Assertions.assertEquals(
-                  LocalDate.of(2026, Month.JULY, 2),
+                  releaseDate,
                   response.releaseDate(),
                   "ReleaseDate should be the same as expected"));
 
-      Mockito.verify(movieRepository).findByTitle(title);
-      Mockito.verify(movieMapper).toMovieResponseDto(movie);
+      verify(movieRepository).findByTitle(title);
+      verify(movieMapper).toMovieResponseDto(movie);
     }
 
     @Test
@@ -288,8 +290,91 @@ class MovieServiceImplTest {
     void findByTitleFailureIdNotFound() {
       String title = "Movie1";
       Assertions.assertThrows(EntityNotFoundException.class, () -> movieService.findByTitle(title));
-      Mockito.verify(movieRepository).findByTitle(title);
-      Mockito.verifyNoInteractions(movieMapper);
+      verify(movieRepository).findByTitle(title);
+      verifyNoInteractions(movieMapper);
+    }
+  }
+
+  @Nested
+  @DisplayName("addMovie Tests")
+  class addMovieTests {
+
+    @Test
+    @DisplayName(
+        "addMovie(), should save a movie in database and return MovieResponseDto with success")
+    void addMovieSuccessTest() {
+      MovieService serviceSpy = spy(movieService);
+
+      String title = "Movie";
+      String description = "description";
+      LocalDate releaseDate = LocalDate.of(2026, Month.JULY, 13);
+      EGenre genre = EGenre.ACTION;
+      String posterPath = "https://poster.jpg";
+
+      MovieRequestDto requestDto =
+          new MovieRequestDto(title, description, releaseDate, genre, posterPath);
+      Movie movieEntity = new Movie(title, description, releaseDate, genre, posterPath);
+      MovieResponseDto expected =
+          new MovieResponseDto(
+              1, title, description, releaseDate, genre, posterPath, new ArrayList<>());
+
+      when(movieMapper.toMovie(any(MovieRequestDto.class))).thenReturn(movieEntity);
+      when(movieRepository.save(any(Movie.class))).thenReturn(movieEntity);
+      when(movieMapper.toMovieResponseDto(any(Movie.class))).thenReturn(expected);
+
+      MovieResponseDto response = serviceSpy.addMovie(requestDto);
+
+      Assertions.assertAll(
+          () -> Assertions.assertNotNull(response, "Dto response should not be null"),
+          () -> Assertions.assertNotNull(response.reviews(), "Reviews should not be null"),
+          () -> Assertions.assertTrue(response.reviews().isEmpty(), "Reviews should be empty"),
+          () -> Assertions.assertEquals(1, response.id(), "Id should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  title, response.title(), "Title should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  "description",
+                  response.description(),
+                  "Description should be the same as expected"),
+          () ->
+              Assertions.assertEquals(
+                  LocalDate.of(2026, Month.JULY, 13),
+                  response.releaseDate(),
+                  "ReleaseDate should be the same as expected"));
+
+      verify(serviceSpy, times(1)).addMovie(any(MovieRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("addMovie(), should throw MovieException when request dto is null")
+    void addMovieInvalidRequestNull() {
+      Assertions.assertThrows(Exception.class, () -> movieService.addMovie(null));
+    }
+
+    @Test
+    @DisplayName("addMovie(), should throw MovieDuplicateException when movie already exists")
+    void addMovieFailureDuplicate() {
+
+      MovieRequestDto requestDto =
+          new MovieRequestDto(
+              "Movie",
+              "Description",
+              LocalDate.of(2026, Month.JULY, 13),
+              EGenre.ACTION,
+              "https://poster.jpg");
+
+      when(movieRepository.existsByTitleAndReleaseDate(
+              requestDto.title(), requestDto.releaseDate()))
+          .thenReturn(true);
+
+      Assertions.assertThrows(
+          MovieDuplicateException.class, () -> movieService.addMovie(requestDto));
+
+      verify(movieRepository, times(1))
+          .existsByTitleAndReleaseDate(requestDto.title(), requestDto.releaseDate());
+
+      verify(movieRepository, never()).save(any(Movie.class));
     }
   }
 }

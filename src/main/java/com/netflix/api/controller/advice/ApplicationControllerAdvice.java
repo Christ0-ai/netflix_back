@@ -1,7 +1,10 @@
 package com.netflix.api.controller.advice;
 
+import com.netflix.api.exception.MovieDuplicateException;
 import com.netflix.api.exception.MovieException;
+import com.netflix.api.utils.Messages;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.ZoneId;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -32,7 +35,9 @@ public class ApplicationControllerAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new ErrorDto(
-                java.time.LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+                java.time.LocalDateTime.now(ZoneId.systemDefault()),
+                HttpStatus.BAD_REQUEST.value(),
+                messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale())));
   }
 
   /**
@@ -43,7 +48,9 @@ public class ApplicationControllerAdvice {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(
             new ErrorDto(
-                java.time.LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), e.getMessage()));
+                java.time.LocalDateTime.now(ZoneId.systemDefault()),
+                HttpStatus.NOT_FOUND.value(),
+                messageSource.getMessage(e.getMessage(), null, LocaleContextHolder.getLocale())));
   }
 
   /**
@@ -53,12 +60,19 @@ public class ApplicationControllerAdvice {
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   public ResponseEntity<ErrorDto> notReadableException(HttpMessageNotReadableException e) {
+    String message = "Json invalide (probleme de conversion de type) : " + e.getMessage();
+
+    if (e.getMessage() != null && e.getMessage().contains("EGenre"))
+      message =
+          messageSource.getMessage(
+              Messages.MOVIE_GENRE_INVALID, null, LocaleContextHolder.getLocale());
+
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new ErrorDto(
-                java.time.LocalDateTime.now(),
+                java.time.LocalDateTime.now(ZoneId.systemDefault()),
                 HttpStatus.BAD_REQUEST.value(),
-                "Json invalide (probleme de conversion de type) : " + e.getMessage()));
+                message));
   }
 
   /**
@@ -70,7 +84,7 @@ public class ApplicationControllerAdvice {
   public ResponseEntity<ErrorsDto> handleValidationExceptions(MethodArgumentNotValidException ex) {
     ErrorsDto errorsDto =
         new ErrorsDto(
-            java.time.LocalDateTime.now(),
+            java.time.LocalDateTime.now(ZoneId.systemDefault()),
             HttpStatus.BAD_REQUEST.value(),
             ex.getBindingResult().getAllErrors().stream()
                 .map(
@@ -85,6 +99,20 @@ public class ApplicationControllerAdvice {
   }
 
   /**
+   * Appelée lorsqu'une tentative est faite de créer un film déjà existant. Renvoie un 409 CONFLICT
+   * indiquant qu'un film avec le même titre et la même date de sortie est déjà présent en base.
+   */
+  @ExceptionHandler(MovieDuplicateException.class)
+  public ResponseEntity<ErrorDto> movieDuplicateException(MovieDuplicateException e) {
+    return ResponseEntity.status(HttpStatus.CONFLICT)
+        .body(
+            new ErrorDto(
+                java.time.LocalDateTime.now(ZoneId.systemDefault()),
+                HttpStatus.CONFLICT.value(),
+                e.getMessage()));
+  }
+
+  /**
    * Appelée en dernier recours pour toute exception non gérée explicitement. Renvoie un 400
    * BAD_REQUEST générique.
    */
@@ -93,6 +121,8 @@ public class ApplicationControllerAdvice {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
         .body(
             new ErrorDto(
-                java.time.LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), e.getMessage()));
+                java.time.LocalDateTime.now(ZoneId.systemDefault()),
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage()));
   }
 }

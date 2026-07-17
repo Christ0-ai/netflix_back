@@ -1,5 +1,6 @@
 package com.netflix.api.service.impl;
 
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.mock;
 
 import com.netflix.api.mapper.UserMapper;
@@ -16,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.support.MessageSourceAccessor;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -25,16 +25,13 @@ class UserServiceImplTest {
 
   @Mock private UserMapper userMapper;
 
-  @Mock private MessageSourceAccessor messages;
-
   private UserService userService;
 
   @BeforeEach
   void setUp() {
     userRepository = mock(UserRepository.class);
     userMapper = mock(UserMapper.class);
-    messages = mock(MessageSourceAccessor.class);
-    userService = new UserServiceImpl(userRepository, userMapper, messages);
+    userService = new UserServiceImpl(userRepository, userMapper);
   }
 
   @Nested
@@ -53,9 +50,9 @@ class UserServiceImplTest {
       UserResponseDto expected2 =
           new UserResponseDto(2, "John Doe", "john.doe@example.com", ERole.USER);
 
-      Mockito.when(userRepository.findAll()).thenReturn(List.of(user1, user2));
-      Mockito.when(userMapper.toUserResponseDto(user1)).thenReturn(expected1);
-      Mockito.when(userMapper.toUserResponseDto(user2)).thenReturn(expected2);
+      when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+      when(userMapper.toUserResponseDto(user1)).thenReturn(expected1);
+      when(userMapper.toUserResponseDto(user2)).thenReturn(expected2);
 
       List<UserResponseDto> response = userService.findAll();
 
@@ -71,15 +68,15 @@ class UserServiceImplTest {
               Assertions.assertEquals(
                   expected2, response.getLast(), "Last DTO should match expected user"));
 
-      Mockito.verify(userRepository).findAll();
-      Mockito.verify(userMapper, Mockito.times(2)).toUserResponseDto(Mockito.any());
+      verify(userRepository).findAll();
+      verify(userMapper, times(2)).toUserResponseDto(Mockito.any());
     }
 
     @Test
     @DisplayName("findAll(), should return an empty list when no user exists")
     void findAllUsersEmptyListTest() {
 
-      Mockito.when(userRepository.findAll()).thenReturn(List.of());
+      when(userRepository.findAll()).thenReturn(List.of());
 
       List<UserResponseDto> response = userService.findAll();
 
@@ -87,8 +84,8 @@ class UserServiceImplTest {
           () -> Assertions.assertNotNull(response, "Response list should not be null"),
           () -> Assertions.assertTrue(response.isEmpty(), "Response list should be empty"));
 
-      Mockito.verify(userRepository).findAll();
-      Mockito.verifyNoInteractions(userMapper);
+      verify(userRepository).findAll();
+      verifyNoInteractions(userMapper);
     }
 
     @Test
@@ -102,8 +99,8 @@ class UserServiceImplTest {
       UserResponseDto expected =
           new UserResponseDto(id, "Jane Doe", "jane.doe@example.com", ERole.USER);
 
-      Mockito.when(userRepository.findById(id)).thenReturn(Optional.of(user));
-      Mockito.when(userMapper.toUserResponseDto(user)).thenReturn(expected);
+      when(userRepository.findById(id)).thenReturn(Optional.of(user));
+      when(userMapper.toUserResponseDto(user)).thenReturn(expected);
 
       UserResponseDto response = userService.findById(id);
 
@@ -120,8 +117,8 @@ class UserServiceImplTest {
               Assertions.assertEquals(
                   ERole.USER, response.role(), "Role should be the same as expected"));
 
-      Mockito.verify(userRepository).findById(id);
-      Mockito.verify(userMapper).toUserResponseDto(user);
+      verify(userRepository).findById(id);
+      verify(userMapper).toUserResponseDto(user);
     }
 
     @Test
@@ -130,13 +127,12 @@ class UserServiceImplTest {
 
       int id = 99;
 
-      Mockito.when(userRepository.findById(id)).thenReturn(Optional.empty());
-      Mockito.when(messages.getMessage("user.id.not_found")).thenReturn("User not found");
+      when(userRepository.findById(id)).thenReturn(Optional.empty());
 
       Assertions.assertThrows(EntityNotFoundException.class, () -> userService.findById(id));
 
-      Mockito.verify(userRepository).findById(id);
-      Mockito.verifyNoInteractions(userMapper);
+      verify(userRepository).findById(id);
+      verifyNoInteractions(userMapper);
     }
   }
 }

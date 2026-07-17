@@ -34,4 +34,13 @@ public class Movie {
 
   @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<Review> reviews = new ArrayList<>();
+
+  public Movie(
+      String title, String description, LocalDate releaseDate, EGenre genre, String posterPath) {
+    this.title = title;
+    this.description = description;
+    this.releaseDate = releaseDate;
+    this.genre = genre;
+    this.posterPath = posterPath;
+  }
 }
