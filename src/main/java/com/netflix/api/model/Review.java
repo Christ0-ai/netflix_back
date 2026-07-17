@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "reviews")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,6 +19,8 @@ public class Review {
 
   private int rating;
   private String comment;
+
+  @Column(name = "creation_date")
   private LocalDate creationDate;
 
   @ManyToOne(fetch = FetchType.LAZY)

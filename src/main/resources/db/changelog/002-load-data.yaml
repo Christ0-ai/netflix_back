@@ -1,0 +1,192 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert-data
+      author: murciana
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: "99" }
+              - column: { name: name, value: "David Girard" }
+              - column: { name: email, value: "david.girard@example.com" }
+              - column: { name: password, value: "password123" }
+              - column: { name: role, value: "USER" }
+
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: "66" }
+              - column: { name: name, value: "Emma Rousseau" }
+              - column: { name: email, value: "emma.rousseau@example.com" }
+              - column: { name: password, value: "password123" }
+              - column: { name: role, value: "USER" }
+
+        - insert:
+            tableName: users
+            columns:
+              - column: { name: id, valueNumeric: "88" }
+              - column: { name: name, value: "Hugo Simon" }
+              - column: { name: email, value: "hugo.simon@example.com" }
+              - column: { name: password, value: "password123" }
+              - column: { name: role, value: "USER" }
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "11" }
+              - column: { name: title, value: "Disclosure Day" }
+              - column: { name: description, value: "A cybersecurity expert becomes a whistleblower after uncovering secrets about aliens, putting him on the run from a corporation. Meanwhile, a meteorologist experiencing strange phenomena joins forces with him to prove there's life beyond our understanding." }
+              - column: { name: release_date, valueDate: "2026-05-26" }
+              - column: { name: poster_path, value: "https://image.tmdb.org/t/p/w500/AnJ8IQJI23hNpYXVNaythu061Ru.jpg" }
+              - column: { name: genre, value: "SCIENCE_FICTION" }
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "22" }
+              - column: { name: title, value: "Obsession" }
+              - column: { name: description, value: "After breaking the mysterious \"One Wish Willow\" to win his crush's heart, a hopeless romantic finds himself getting exactly what he asked for but soon discovers that some desires come at a dark, sinister price." }
+              - column: { name: release_date, valueDate: "2026-05-13" }
+              - column: { name: poster_path, value: "https://image.tmdb.org/t/p/w500/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg" }
+              - column: { name: genre, value: "HORROR" }
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "33" }
+              - column: { name: title, value: "Toy Story 5" }
+              - column: { name: description, value: "When Bonnie receives a Lilypad tablet as a gift and becomes obsessed, Buzz, Woody, Jessie and the rest of the gang's jobs become exponentially harder when they have to go head to head with the all-new threat to playtime." }
+              - column: { name: release_date, valueDate: "2026-05-22" }
+              - column: { name: poster_path, value: "https://image.tmdb.org/t/p/w500/sfQtVlIHljToOwYjhe21KPGzZWK.jpg" }
+              - column: { name: genre, value: "ANIMATION" }
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "44" }
+              - column: { name: title, value: "Welcome to the Jungle" }
+              - column:
+                  name: description
+                  value: "A group of quirky characters gets stuck in a dangerous jungle during a chaotic mission. Filled with confusion, criminals, and hilarious situations, they must work together to survive and find their way out."
+              - column:
+                  name: release_date
+                  valueDate: "2026-06-25"
+              - column:
+                  name: poster_path
+                  value: "https://image.tmdb.org/t/p/w500/1JlfUuvvX5xLP2LIDah4JhWUtTx.jpg"
+              - column:
+                  name: genre
+                  value: "ACTION"
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "55" }
+              - column: { name: title, value: "Backrooms" }
+              - column:
+                  name: description
+                  value: "A strange doorway appears in the basement of a furniture showroom."
+              - column:
+                  name: release_date
+                  valueDate: "2026-05-27"
+              - column:
+                  name: poster_path
+                  value: "https://image.tmdb.org/t/p/w500/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg"
+              - column:
+                  name: genre
+                  value: "HORROR"
+
+        - insert:
+            tableName: movies
+            columns:
+              - column: { name: id, valueNumeric: "77" }
+              - column: { name: title, value: "The Devil Wears Prada 2" }
+              - column:
+                  name: description
+                  value: "Andy Sachs returns to Runway as Miranda Priestly navigates a new media landscape and Runway's position within. The duo reconnect with former assistant Emily Charlton, now the head of a luxury brand that possesses funding which could ensure Runway's survival."
+              - column:
+                  name: release_date
+                  valueDate: "2026-04-29"
+              - column:
+                  name: poster_path
+                  value: "https://image.tmdb.org/t/p/w500/fCAURTUx3YfsJ8k9I0UamjSILiR.jpg"
+              - column:
+                  name: genre
+                  value: "COMEDY"
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "100" }
+              - column: { name: rating, valueNumeric: "3" }
+              - column: { name: comment, value: "Ça passe le temps sans être marquant." }
+              - column: { name: creation_date, valueDate: "2026-07-15" }
+              - column: { name: movie_id, valueNumeric: "11" }
+              - column: { name: user_id, valueNumeric: "99" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "101" }
+              - column: { name: rating, valueNumeric: "2" }
+              - column: { name: comment, value: "Un peu déçu par la fin, mais l'ensemble se laisse voir" }
+              - column: { name: creation_date, valueDate: "2026-07-03" }
+              - column: { name: movie_id, valueNumeric: "22" }
+              - column: { name: user_id, valueNumeric: "88" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "102" }
+              - column: { name: rating, valueNumeric: "5" }
+              - column: { name: comment, value: "Parfait du début à la fin, aucune longueur." }
+              - column: { name: creation_date, valueDate: "2026-07-14" }
+              - column: { name: movie_id, valueNumeric: "33" }
+              - column: { name: user_id, valueNumeric: "66" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "103" }
+              - column: { name: rating, valueNumeric: "4" }
+              - column:
+                  name: comment
+                  value: "Vraiment sympa à regarder entre amis, bon divertissement."
+              - column:
+                  name: creation_date
+                  valueDate: "2026-07-07"
+              - column: { name: movie_id, valueNumeric: "44" }
+              - column: { name: user_id, valueNumeric: "66" }
+
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "104" }
+              - column: { name: rating, valueNumeric: "5" }
+              - column:
+                  name: comment
+                  value: "Un des meilleurs films que j'ai vus cette année, à voir absolument."
+              - column:
+                  name: creation_date
+                  valueDate: "2026-07-02"
+              - column: { name: movie_id, valueNumeric: "55" }
+              - column: { name: user_id, valueNumeric: "99" }
+
+        - insert:
+            tableName: reviews
+            columns:
+              - column: { name: id, valueNumeric: "105" }
+              - column: { name: rating, valueNumeric: "5" }
+              - column:
+                  name: comment
+                  value: "Scénario ficelé, acteurs au top, rien à redire."
+              - column:
+                  name: creation_date
+                  valueDate: "2026-05-22"
+              - column: { name: movie_id, valueNumeric: "77" }
+              - column: { name: user_id, valueNumeric: "88" }
+
+
+
+

@@ -1,0 +1,121 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movies-table
+      author: murciana
+      changes:
+        - createTable:
+            tableName: movies
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: title
+                  type: varchar(250)
+
+              - column:
+                  name: description
+                  type: varchar(1000)
+
+              - column:
+                  name: release_date
+                  type: DATE
+
+              - column:
+                  name: poster_path
+                  type: varchar(250)
+
+              - column:
+                  name: genre
+                  type: varchar(50)
+
+
+  - changeSet:
+      id: create-users-table
+      author: murciana
+      changes:
+          - createTable:
+              tableName: users
+              columns:
+                - column:
+                    name: id
+                    type: INT
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+
+                - column:
+                    name: name
+                    type: varchar(250)
+
+                - column:
+                    name: email
+                    type: varchar(250)
+
+                - column:
+                    name: password
+                    type: varchar(250)
+
+                - column:
+                    name: role
+                    type: varchar(50)
+
+
+
+  - changeSet:
+      id: create-reviews-table
+      author: murciana
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: rating
+                  type: INT
+
+              - column:
+                  name: comment
+                  type: varchar(1000)
+
+
+              - column:
+                  name: creation_date
+                  type: DATE
+
+              - column:
+                  name: movie_id
+                  type: INT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+
+
+        - addForeignKeyConstraint:
+              baseTableName: reviews
+              baseColumnNames: movie_id
+              referencedTableName: movies
+              referencedColumnNames: id
+              constraintName: fk_reviews_movie
+
+        - addForeignKeyConstraint:
+              baseTableName: reviews
+              baseColumnNames: user_id
+              referencedTableName: users
+              referencedColumnNames: id
+              constraintName: fk_reviews_user

@@ -94,3 +94,20 @@ Exemple :
 - Database : `netflix`
 - Username : `postgres`
 - Password : `password`
+
+## Migrations liquibase
+
+Le projet utilise **Liquibase** pour créer automatiquement le schéma de la base de données et charger les données de démonstration.
+
+Pour créer les tables et charger les données :
+`./mvnw liquibase:update`
+
+Afficher les migrations restantes à exécuter : `./mvnw liquibase:status`
+
+*Réinitialiser la base de données (développement):*
+```sql
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+```
+
+Puis réappliquer les migrations : `./mvnw liquibase:update`
