@@ -11,6 +11,7 @@ import com.netflix.api.utils.Messages;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @AllArgsConstructor
 @Transactional
+@Slf4j
 public class MovieServiceImpl implements MovieService {
 
   private final MovieRepository movieRepository;
@@ -57,14 +59,26 @@ public class MovieServiceImpl implements MovieService {
   @Override
   public MovieResponseDto addMovie(MovieRequestDto requestDto) {
 
-    checkMovie(requestDto);
+    validateMovieNotDuplicate(requestDto);
 
     Movie saved = movieRepository.save(movieMapper.toMovie(requestDto));
 
+    log.info("Movie created: id={}, title={}", saved.getId(), saved.getTitle());
     return movieMapper.toMovieResponseDto(saved);
   }
 
-  private void checkMovie(MovieRequestDto requestDto) {
+  @Override
+  public void deleteMovie(int id) {
+    Movie movie =
+        movieRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Messages.MOVIE_ID_NOT_FOUND));
+
+    log.info("Movie to delete: id={}, title={}", movie.getId(), movie.getTitle());
+    movieRepository.delete(movie);
+  }
+
+  private void validateMovieNotDuplicate(MovieRequestDto requestDto) {
 
     if (movieRepository.existsByTitleAndReleaseDate(requestDto.title(), requestDto.releaseDate()))
       throw new MovieDuplicateException(messages.getMessage(Messages.MOVIE_ALREADY_EXISTS));

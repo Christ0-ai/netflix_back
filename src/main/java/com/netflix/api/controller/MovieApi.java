@@ -55,4 +55,14 @@ public interface MovieApi {
       content = @Content(schema = @Schema(implementation = ErrorDto.class)))
   @PostMapping()
   ResponseEntity<MovieResponseDto> addMovie(@RequestBody @Valid MovieRequestDto requestDto);
+
+  @Operation(summary = "Delete a movie by its id")
+  @ApiResponse(responseCode = "204", description = "Movie deleted successfully")
+  @ApiResponse(
+      responseCode = "404",
+      description = "Movie not found",
+      content = @Content(schema = @Schema(implementation = ErrorDto.class)))
+  @DeleteMapping("/{id}")
+  ResponseEntity<Void> deleteMovie(
+      @PathVariable @Parameter(description = "Movie id", required = true) int id);
 }

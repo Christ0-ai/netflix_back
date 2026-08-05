@@ -377,4 +377,44 @@ class MovieServiceImplTest {
       verify(movieRepository, never()).save(any(Movie.class));
     }
   }
+
+  @Nested
+  @DisplayName("deleteMovie Tests")
+  class deleteMovieTests {
+
+    @Test
+    @DisplayName("deleteMovie(), should delete movie successfully when id exists")
+    void deleteMovieSuccessTest() {
+      int id = 11;
+      Movie movie =
+          new Movie(
+              id,
+              "Movie to Delete",
+              "description",
+              LocalDate.of(2026, Month.JULY, 2),
+              EGenre.ACTION,
+              "https://poster.jpg",
+              new ArrayList<>());
+
+      when(movieRepository.findById(id)).thenReturn(Optional.of(movie));
+
+      movieService.deleteMovie(id);
+
+      verify(movieRepository).findById(id);
+      verify(movieRepository).delete(movie);
+    }
+
+    @Test
+    @DisplayName("deleteMovie(), should throw EntityNotFoundException when id not found")
+    void deleteMovieFailureIdNotFound() {
+      int id = 999;
+
+      when(movieRepository.findById(id)).thenReturn(Optional.empty());
+
+      Assertions.assertThrows(EntityNotFoundException.class, () -> movieService.deleteMovie(id));
+
+      verify(movieRepository).findById(id);
+      verify(movieRepository, never()).delete(any(Movie.class));
+    }
+  }
 }

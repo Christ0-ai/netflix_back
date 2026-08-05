@@ -12,4 +12,6 @@ public interface MovieService {
   MovieResponseDto findByTitle(String title);
 
   MovieResponseDto addMovie(MovieRequestDto requestDto);
+
+  void deleteMovie(int id);
 }

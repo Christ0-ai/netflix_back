@@ -51,4 +51,11 @@ public class MovieController implements MovieApi {
 
     return ResponseEntity.created(location).body(responseDto);
   }
+
+  @Override
+  public ResponseEntity<Void> deleteMovie(int id) {
+    log.info("Access to endpoint DELETE/movies/{id}");
+    movieService.deleteMovie(id);
+    return ResponseEntity.noContent().build();
+  }
 }
