@@ -1,5 +1,6 @@
 package com.netflix.api.service;
 
+import com.netflix.api.service.dto.MovieRequestDto;
 import com.netflix.api.service.dto.MovieResponseDto;
 import java.util.List;
 
@@ -9,4 +10,6 @@ public interface MovieService {
   MovieResponseDto findById(int id);
 
   MovieResponseDto findByTitle(String title);
+
+  MovieResponseDto addMovie(MovieRequestDto requestDto);
 }

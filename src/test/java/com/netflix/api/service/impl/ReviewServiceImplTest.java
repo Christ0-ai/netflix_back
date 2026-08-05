@@ -1,6 +1,6 @@
 package com.netflix.api.service.impl;
 
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 import com.netflix.api.mapper.ReviewMapper;
 import com.netflix.api.model.Movie;
@@ -21,9 +21,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.support.MessageSourceAccessor;
 
 @ExtendWith(MockitoExtension.class)
 class ReviewServiceImplTest {
@@ -32,16 +30,13 @@ class ReviewServiceImplTest {
 
   @Mock private ReviewMapper reviewMapper;
 
-  @Mock private MessageSourceAccessor messages;
-
   private ReviewService reviewService;
 
   @BeforeEach
   void setUp() {
     reviewRepository = mock(ReviewRepository.class);
     reviewMapper = mock(ReviewMapper.class);
-    messages = mock(MessageSourceAccessor.class);
-    reviewService = new ReviewServiceImpl(reviewRepository, reviewMapper, messages);
+    reviewService = new ReviewServiceImpl(reviewRepository, reviewMapper);
   }
 
   @Nested
@@ -85,9 +80,9 @@ class ReviewServiceImplTest {
               LocalDate.of(2026, Month.JULY, 12),
               new UserResponseDto(1, "user", "user@email.com", ERole.USER));
 
-      Mockito.when(reviewRepository.findAll()).thenReturn(List.of(review1, review2));
-      Mockito.when(reviewMapper.toReviewResponseDto(review1)).thenReturn(expected1);
-      Mockito.when(reviewMapper.toReviewResponseDto(review2)).thenReturn(expected2);
+      when(reviewRepository.findAll()).thenReturn(List.of(review1, review2));
+      when(reviewMapper.toReviewResponseDto(review1)).thenReturn(expected1);
+      when(reviewMapper.toReviewResponseDto(review2)).thenReturn(expected2);
 
       List<ReviewResponseDto> response = reviewService.findAll();
 
@@ -103,14 +98,14 @@ class ReviewServiceImplTest {
               Assertions.assertEquals(
                   expected2, response.getLast(), "Last DTO should match expected review"));
 
-      Mockito.verify(reviewRepository).findAll();
-      Mockito.verify(reviewMapper, Mockito.times(2)).toReviewResponseDto(Mockito.any());
+      verify(reviewRepository).findAll();
+      verify(reviewMapper, times(2)).toReviewResponseDto(any());
     }
 
     @Test
     @DisplayName("findAll(), should return an empty list when no review exists")
     void findAllReviewsEmptyListTest() {
-      Mockito.when(reviewRepository.findAll()).thenReturn(List.of());
+      when(reviewRepository.findAll()).thenReturn(List.of());
 
       List<ReviewResponseDto> response = reviewService.findAll();
 
@@ -118,8 +113,8 @@ class ReviewServiceImplTest {
           () -> Assertions.assertNotNull(response, "Response list should not be null"),
           () -> Assertions.assertTrue(response.isEmpty(), "Response list should be empty"));
 
-      Mockito.verify(reviewRepository).findAll();
-      Mockito.verifyNoInteractions(reviewMapper);
+      verify(reviewRepository).findAll();
+      verifyNoInteractions(reviewMapper);
     }
 
     @Test
@@ -149,8 +144,8 @@ class ReviewServiceImplTest {
               LocalDate.of(2026, Month.JULY, 13),
               new UserResponseDto(1, "user", "user@email.com", ERole.USER));
 
-      Mockito.when(reviewRepository.findById(id)).thenReturn(Optional.of(review));
-      Mockito.when(reviewMapper.toReviewResponseDto(review)).thenReturn(expected);
+      when(reviewRepository.findById(id)).thenReturn(Optional.of(review));
+      when(reviewMapper.toReviewResponseDto(review)).thenReturn(expected);
 
       ReviewResponseDto response = reviewService.findById(id);
 
@@ -172,8 +167,8 @@ class ReviewServiceImplTest {
               Assertions.assertEquals(
                   100, response.id(), "Review id should be the same as expected"));
 
-      Mockito.verify(reviewRepository).findById(id);
-      Mockito.verify(reviewMapper).toReviewResponseDto(review);
+      verify(reviewRepository).findById(id);
+      verify(reviewMapper).toReviewResponseDto(review);
     }
 
     @Test
@@ -181,12 +176,12 @@ class ReviewServiceImplTest {
     void findByIdFailureIdNotFound() {
       int id = 99;
 
-      Mockito.when(reviewRepository.findById(id)).thenReturn(Optional.empty());
+      when(reviewRepository.findById(id)).thenReturn(Optional.empty());
 
       Assertions.assertThrows(EntityNotFoundException.class, () -> reviewService.findById(id));
 
-      Mockito.verify(reviewRepository).findById(id);
-      Mockito.verifyNoInteractions(reviewMapper);
+      verify(reviewRepository).findById(id);
+      verifyNoInteractions(reviewMapper);
     }
   }
 }

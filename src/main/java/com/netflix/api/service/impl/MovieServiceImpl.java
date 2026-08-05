@@ -1,13 +1,15 @@
 package com.netflix.api.service.impl;
 
+import com.netflix.api.exception.MovieDuplicateException;
 import com.netflix.api.mapper.MovieMapper;
 import com.netflix.api.model.Movie;
 import com.netflix.api.repository.MovieRepository;
 import com.netflix.api.service.MovieService;
+import com.netflix.api.service.dto.MovieRequestDto;
 import com.netflix.api.service.dto.MovieResponseDto;
+import com.netflix.api.utils.Messages;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
@@ -17,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 @Transactional
 public class MovieServiceImpl implements MovieService {
-
-  private static final String MOVIE_ID_NOT_FOUND = "movie.id.not_found";
-  private static final String MOVIE_TITLE_NOT_FOUND = "movie.title.not_found";
 
   private final MovieRepository movieRepository;
   private final MovieMapper movieMapper;
@@ -35,21 +34,39 @@ public class MovieServiceImpl implements MovieService {
   @Override
   @Transactional(readOnly = true)
   public MovieResponseDto findById(int id) {
-    Optional<Movie> optMovie = movieRepository.findById(id);
-    if (optMovie.isEmpty())
-      throw new EntityNotFoundException(messages.getMessage(MOVIE_ID_NOT_FOUND));
+    Movie movie =
+        movieRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Messages.MOVIE_ID_NOT_FOUND));
 
-    return movieMapper.toMovieResponseDto(optMovie.get());
+    return movieMapper.toMovieResponseDto(movie);
   }
 
   @Override
   @Transactional(readOnly = true)
   public MovieResponseDto findByTitle(String title) {
 
-    Optional<Movie> optMovie = movieRepository.findByTitle(title);
-    if (optMovie.isEmpty())
-      throw new EntityNotFoundException(messages.getMessage(MOVIE_TITLE_NOT_FOUND));
+    Movie movie =
+        movieRepository
+            .findByTitle(title)
+            .orElseThrow(() -> new EntityNotFoundException(Messages.MOVIE_TITLE_NOT_FOUND));
 
-    return movieMapper.toMovieResponseDto(optMovie.get());
+    return movieMapper.toMovieResponseDto(movie);
+  }
+
+  @Override
+  public MovieResponseDto addMovie(MovieRequestDto requestDto) {
+
+    checkMovie(requestDto);
+
+    Movie saved = movieRepository.save(movieMapper.toMovie(requestDto));
+
+    return movieMapper.toMovieResponseDto(saved);
+  }
+
+  private void checkMovie(MovieRequestDto requestDto) {
+
+    if (movieRepository.existsByTitleAndReleaseDate(requestDto.title(), requestDto.releaseDate()))
+      throw new MovieDuplicateException(messages.getMessage(Messages.MOVIE_ALREADY_EXISTS));
   }
 }
